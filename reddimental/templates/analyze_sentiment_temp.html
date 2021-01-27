@@ -1,0 +1,88 @@
+<!doctype html>
+{% extends "base.html" %}
+{% block content %}
+<html>
+<head>
+    {% load static %}
+    <title>Reddit Sentiment</title>
+    <link rel="icon" href="img/favicon.ico">
+    <style>
+        .wrap::before {
+            position: absolute;
+            height: 50vh;
+            width: 100vw;
+            content: '';
+            z-index: 1;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .lead {
+            font-size: 1.175em;
+            font-weight: 300;
+        }
+        .uk-logo img {
+            height: 28px;
+        }
+    </style>
+</head>
+
+<body class="uk-light wrap uk-background-cover uk-background-center-center uk-cover-container uk-background-secondary">
+    <img data-srcset="https://picsum.photos/id/382/640/700/?blur=8 640w,
+                    https://picsum.photos/id/382/960/700/?blur=8 960w,
+                    https://picsum.photos/id/382/1200/900/?blur=8 1200w,
+                    https://picsum.photos/id/382/2000/1000/?blur=8 2000w"
+            sizes="100vw"
+            data-src="https://picsum.photos/id/382/1200/900/?blur=8" alt="" data-uk-cover data-uk-img
+    >
+    <div class="uk-flex uk-flex-center uk-flex-middle uk-position-z-index uk-position-relative" data-uk-height-viewport="min-height: 400">
+        
+        <!-- NAV -->
+        <div class="uk-position-top">
+            <div class="uk-container uk-container-small">
+                <nav class="uk-navbar-container uk-navbar-transparent" data-uk-navbar>  
+                    <div class="uk-navbar-left">
+                        <div class="uk-navbar-item">
+                            <a class="uk-logo" href="/">Reddimental</a>
+                        </div>
+                    </div>
+                    <div class="uk-navbar-right">
+                        <ul class="uk-navbar-nav">
+                            <li class="uk-active uk-visible@m"><a href="/" data-uk-icon="home"></a></li>
+                            <li class="uk-visible@s"><a href="/about">About</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <!-- /NAV -->
+        <!-- SUBMISSION -->
+        <div class="uk-container uk-container-medium uk-flex-auto uk-text-left" data-uk-scrollspy="target: > .animate; cls: uk-animation-slide-bottom-small uk-invisible; delay: 300">
+            <article class="uk-article animate uk-invisible">
+                <h1 class="uk-article-title">Title Here</h1>
+            
+                <p class="uk-text-lead">The source code for this website can be found on my <a href="https://github.com/bzgnc/SWE-573" uk-icon="icon: github; ratio: 2"></a>.</p>
+            
+                <p class="uk-text-meta"><strong>TECHNOLOGIES USED</strong></p>
+                {% for x in test_list %}
+                    <!-- COMMENT -->
+                    <header class="uk-comment-header uk-grid-medium uk-flex-middle" uk-grid>
+                        <div class="uk-width-expand">
+                            <h4 class="uk-comment-title uk-margin-remove"><a class="uk-link-reset" href="#">Author</a></h4>
+                            <ul class="uk-comment-meta uk-subnav uk-subnav-divider uk-margin-remove-top">
+                                <li><a href="#">12 days ago</a></li>
+                                <li><a href="#">Sentiment Score {{x}}</a></li>
+                            </ul>
+                        </div>
+                    </header>
+                    <div class="uk-comment-body">
+                        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+                    </div>
+                    <!-- / COMMENT -->
+                    <hr class="uk-divider-icon">
+                {% endfor %}
+                </article>
+        </div>
+        <!-- / SUBMISSION -->
+    </div>
+</body>
+</html>
+{% endblock %}
