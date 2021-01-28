@@ -1,7 +1,7 @@
-# Reddit Sentiment Analysis Dashboard
-This web app is currently hosted at **https://redditsentiment.herokuapp.com/.**
+# Reddimental Dashboard
+This web app is currently hosted at **https://.herokuapp.com/.**
 
-This web app utilizes **Django, Reddit's API** and **Google's Cloud Natural Language API** to offer an at-a-glance
+This web app utilizes **Django, Reddit's API** to offer an at-a-glance
 overview of a subreddit's overarching sentiment, with detailed statistics for each post and comment.
 
 # Run the project yourself
@@ -19,10 +19,4 @@ reddit_user_agent = 'your descriptive identifier containing your program name an
 ```
 
 Note that while the first two API keys are provided by Reddit, the `reddit_user_agent` key **must** be written by yourself, to prevent abuse of the Reddit API.
-For example: `'RedditSentimentCrawler v0.1, by /u/UsernameHere'`
-
-## Google Cloud Natural Language API
-Queries to Google's Cloud NLP API are also implemented in the project. As such, each time you wish to run the development server locally, the you must set an environment variable linking to your Google Cloud Platform API Key. More information can be found at https://cloud.google.com/natural-language/docs/quickstart-client-libraries.
-
-Note: Only 5000 queries (pieces of text <1000 characters) to each API endpoint (of which sentiment analysis is included) are free, per billing month.
-
+For example: `'RedditSentimentScraper v0.1, by /u/UsernameHere'`

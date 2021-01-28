@@ -85,6 +85,7 @@ class RedditScrapeManager:
 
     def get_comment_data(self, comment_forest, submission_id):
         # Initialize 'comments_list[]', a list of dictionaries, each storing an individual comment's data
+        global submission_sentiment_score
         comments_list = []
         # Initalize total_sentiment_score, to calculate an average from
         total_sentiment_score = 0
@@ -110,17 +111,20 @@ class RedditScrapeManager:
 
                 # Append comment's dictionary to comments_list
                 comments_list.append(temp_comment_data)
-
+            sia = SIA()
             sub = Submission.objects.get(submission_id=submission_id)
-
-            cmnt = Comment(comment_text=top_level_comment.body, author=top_level_comment.author,timestamp=datetime.now(),submission=sub)
+            submission_sentiment_score = sia.polarity_scores(sub.title)['compound'] * 100
+            cmnt = Comment(comment_text=top_level_comment.body, author=top_level_comment.author,
+                           timestamp=datetime.now(), submission=sub)
             cmnt.save()
+
+
 
         # Calculate average sentiment score for the submission
         if not comments_list:
-            average_sentiment_score = total_sentiment_score
+            average_sentiment_score = total_sentiment_score + submission_sentiment_score
         else:
-            average_sentiment_score = total_sentiment_score / (len(comments_list))
+            average_sentiment_score = (total_sentiment_score + submission_sentiment_score) / (len(comments_list)+1)
         return {'comments_list': comments_list, 'average_sentiment_score': average_sentiment_score}
 
     # Function uses vader sentiment analysis template to return sentiment score for each comment
