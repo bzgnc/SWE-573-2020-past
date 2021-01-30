@@ -2,8 +2,13 @@ from datetime import datetime
 
 from django.shortcuts import render
 from .forms import SubredditForm
-
+from .models import Submission, Comment
 from .praw_reddit_scraper import RedditScrapeManager
+import pandas as pd
+import numpy as np
+
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 
 
 # Create your views here.
@@ -31,13 +36,36 @@ def analyze_sentiment(request):
         subreddit_total_num_comments += len(submission['comments'])
         subreddit_total_sentiment_score += submission['average_sentiment_score'] * (len(submission['comments']))
 
-
     subreddit_average_sentiment_score = subreddit_total_sentiment_score / subreddit_total_num_comments
     subreddit_info['average_sentiment_score'] = round(subreddit_average_sentiment_score, 1)
 
+    sia = SIA()
+    qs1 = Submission.objects.filter(title__icontains=subreddit).distinct()
+    x = [x.title for x in qs1]
+    y = [sia.polarity_scores(y.title)['compound'] * 100 for y in qs1]
+    chart1 = RedditScrapeManager.get_plot1(x, y)
+
+    qs2 = Comment.objects.all().distinct()
+    x = [x.comment_text for x in qs2]
+    y = [sia.polarity_scores(y.comment_text)['compound'] * 100 for y in qs2]
+    chart2 = RedditScrapeManager.get_plot2(x, y)
+
+    qs3 = Comment.objects.all().distinct()
+    results = []
+    results = [sia.polarity_scores(x.comment_text) for x in qs3]
+    df = pd.DataFrame.from_records(results)
+    df['label'] = 0
+    df.loc[df['compound'] > 0.1, 'label'] = 1
+    df.loc[df['compound'] < -0.1, 'label'] = -1
+    counts = df.label.value_counts(normalize=True) * 100
+    x = counts.index
+    y = counts
+    chart3 = RedditScrapeManager.get_plot3(x, y)
+
+    
     if scrape_instance.sub_exists():
         args = {'subreddit': subreddit, 'subreddit_info': subreddit_info,
-                'master_submission_data_list': master_submission_data_list}
+                'master_submission_data_list': master_submission_data_list, 'chart1': chart1, 'chart2': chart2, 'chart3': chart3}
         return render(request, 'analyze_sentiment.html', args)
 
     '''

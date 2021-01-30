@@ -32,7 +32,7 @@
 			</div>
 		</div>
 		<!-- /NAV -->
-			
+
 		<div class="uk-cover-container uk-light uk-flex uk-flex-middle top-wrap-height">	
 			<!-- TOP CONTAINER -->
 			<div class="uk-container uk-flex-auto top-container uk-position-relative uk-margin-medium-top" data-uk-parallax="y: 0,50; easing:0; opacity:0.2">
@@ -61,7 +61,15 @@
 			<!-- /NAV ARROW DOWN -->
 		</div>
 		<!-- /TOP -->
-		
+		{% if chart1 %}
+			<img src="data:image/png;base64, {{chart1|safe}}">
+		{% endif %}
+		{% if chart2 %}
+			<img src="data:image/png;base64, {{chart2|safe}}">
+		{% endif %}
+		{% if chart3 %}
+			<img src="data:image/png;base64, {{chart3|safe}}">
+		{% endif %}
 		<!-- SUBMISSION -->
 		{% for submission in master_submission_data_list %}
 		<section id = "submission" class="uk-section uk-section-secondary uk-section-large">

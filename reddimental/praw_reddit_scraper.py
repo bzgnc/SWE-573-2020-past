@@ -1,8 +1,14 @@
 # Import Reddit API wrapper (PRAW) and hidden API keys from api_keys.py for PRAW
 from datetime import datetime, timezone
+from typing import Any, Union
 
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
 import nltk
 import praw
+from IPython.core.pylabtools import figsize
+
 from .api_keys import reddit_client_id, reddit_client_secret, reddit_user_agent
 
 # Import NotFound to validate subreddit form
@@ -84,8 +90,8 @@ class RedditScrapeManager:
         return self.master_submission_data_list
 
     def get_comment_data(self, comment_forest, submission_id):
-        # Initialize 'comments_list[]', a list of dictionaries, each storing an individual comment's data
         global submission_sentiment_score
+        # Initialize 'comments_list[]', a list of dictionaries, each storing an individual comment's data
         comments_list = []
         # Initalize total_sentiment_score, to calculate an average from
         total_sentiment_score = 0
@@ -129,10 +135,56 @@ class RedditScrapeManager:
 
     # Function uses vader sentiment analysis template to return sentiment score for each comment
     def get_sentiment_score(self, comment_text):
-        # Query API and store value in sentiment_score
-
+        # Use sentiment intensity analyzer and store value in sentiment_score
         sia = SIA()
 
         sentiment_score = sia.polarity_scores(comment_text)['compound']
 
         return sentiment_score
+
+    def get_graph():
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        image_png = buffer.getvalue()
+        graph = base64.b64encode(image_png)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        return graph
+
+    def get_plot1(x, y):
+        plt.switch_backend('AGG')
+        plt.figure(figsize(14, 7))
+        plt.title('Sentiment Score of Subreddits')
+        plt.bar(x, y)
+        plt.xticks(rotation=45)
+        plt.xlabel('Subreddits')
+        plt.ylabel('Sentiment Score')
+        plt.tight_layout()
+        graph = RedditScrapeManager.get_graph()
+        return graph
+
+
+    def get_plot2(x, y):
+        plt.switch_backend('AGG')
+        plt.figure(figsize(14, 7))
+        plt.title('Sentiment Score of Comments')
+        plt.bar(x, y)
+        plt.xticks(rotation=45)
+        plt.xlabel('Subreddits')
+        plt.ylabel('Sentiment Score')
+        plt.tight_layout()
+        graph = RedditScrapeManager.get_graph()
+        return graph
+
+    def get_plot3(x, y):
+        plt.switch_backend('AGG')
+        plt.figure(figsize(14, 7))
+        plt.title('sales of items')
+        plt.bar(x, y)
+        plt.xlabel(['negative', 'neutral', 'positive'])
+        plt.ylabel('percentage')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        graph = RedditScrapeManager.get_graph()
+        return graph
