@@ -9,3 +9,4 @@ urlpatterns = [
     path('analyze_sentiment/', views.analyze_sentiment, name="analyze_sentiment"),
     path('accounts/', include('accounts.urls'))
 ]
+

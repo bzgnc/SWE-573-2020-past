@@ -4,6 +4,7 @@ from django.shortcuts import render
 from .forms import SubredditForm
 from .models import Submission, Comment
 from .praw_reddit_scraper import RedditScrapeManager
+from django.contrib.auth.decorators import login_required
 import pandas as pd
 import numpy as np
 
@@ -20,7 +21,7 @@ def index(request):
 def about(request):
     return render(request, 'about.html')
 
-
+@login_required(login_url="/accounts/login/")
 def analyze_sentiment(request):
     subreddit = request.GET.get('subreddit')
     # Initialize instance of RedditScrapeManager, to call methods on
