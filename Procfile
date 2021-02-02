@@ -1,0 +1,1 @@
+web: gunicorn reddit_sentiment_dashboard.wsgi:application --log-file -

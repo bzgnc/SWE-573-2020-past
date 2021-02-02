@@ -75,8 +75,8 @@ def analyze_sentiment(request):
     df.loc[df['compound'] < -0.1, 'label'] = -1
     x1 = df[df['label'] == -1].timestamp
     x2 = df[df['label'] == 1].timestamp
-    y1 = df[df['label'] == -1].compound
-    y2 = df[df['label'] == 1].compound
+    y1 = df[df['label'] == -1].compound * 100
+    y2 = df[df['label'] == 1].compound * 100
     chart4 = RedditScrapeManager.get_plot4(x1, y1, x2, y2)
 
     if scrape_instance.sub_exists():
