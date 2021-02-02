@@ -1,5 +1,5 @@
 # Reddimental Dashboard
-This web app is currently hosted at **https://.herokuapp.com/.**
+This web app is currently hosted at **https://reddimental.herokuapp.com**
 
 This web app utilizes **Django, Reddit's API** to offer an at-a-glance
 overview of a subreddit's overarching sentiment, with detailed statistics for each post and comment.
