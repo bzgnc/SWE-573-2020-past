@@ -1,7 +1,8 @@
 # Import Reddit API wrapper (PRAW) and hidden API keys from api_keys.py for PRAW
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Union
-
+from django.utils import timezone
+import pytz
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
@@ -25,8 +26,11 @@ nltk.download('stopwords')
 
 
 # PRAW Manager class
+# noinspection PyTypeChecker
 class RedditScrapeManager:
+
     def __init__(self, subreddit):
+
         # Receive arguments from object
         self.subreddit = subreddit
         # Initialize list to store dictionaries of submission info
@@ -89,12 +93,13 @@ class RedditScrapeManager:
 
         return self.master_submission_data_list
 
+
     def get_comment_data(self, comment_forest, submission_id):
-        global submission_sentiment_score
         # Initialize 'comments_list[]', a list of dictionaries, each storing an individual comment's data
         comments_list = []
-        # Initalize total_sentiment_score, to calculate an average from
+        # Initialize total_sentiment_score, to calculate an average from
         total_sentiment_score = 0
+        submission_sentiment_score = 0
         # Loops through comment_forest taken as argument and appends each top level comment to comments_list
         for top_level_comment in comment_forest:
             # Will not scrape stickied comments (usually AutoModerator, or meta posts) or comments longer than 950 characters (cost purposes)
@@ -107,8 +112,7 @@ class RedditScrapeManager:
                 temp_comment_data['text'] = top_level_comment.body
                 temp_comment_data['author'] = top_level_comment.author
                 temp_comment_data['score'] = top_level_comment.score
-                temp_comment_data['timestamp'] = time.strftime("%I:%M %p on %d %B",
-                                                               time.localtime(top_level_comment.created_utc))
+                temp_comment_data['timestamp'] = time.strftime("%I:%M %p on %d %B", time.localtime(top_level_comment.created_utc))
                 temp_comment_data['stickied'] = top_level_comment.stickied
 
                 # Calls get_sentiment_score and passes comment text as argument, returns sentiment score
@@ -119,18 +123,16 @@ class RedditScrapeManager:
                 comments_list.append(temp_comment_data)
             sia = SIA()
             sub = Submission.objects.get(submission_id=submission_id)
+
             submission_sentiment_score = sia.polarity_scores(sub.title)['compound'] * 100
-            cmnt = Comment(comment_text=top_level_comment.body, author=top_level_comment.author,
-                           timestamp=datetime.now(), submission=sub)
+            cmnt = Comment(comment_text=top_level_comment.body, author=top_level_comment.author, timestamp=timezone.now(), submission=sub)
             cmnt.save()
-
-
 
         # Calculate average sentiment score for the submission
         if not comments_list:
             average_sentiment_score = total_sentiment_score + submission_sentiment_score
         else:
-            average_sentiment_score = (total_sentiment_score + submission_sentiment_score) / (len(comments_list)+1)
+            average_sentiment_score = (total_sentiment_score + submission_sentiment_score) / (len(comments_list) + 1)
         return {'comments_list': comments_list, 'average_sentiment_score': average_sentiment_score}
 
     # Function uses vader sentiment analysis template to return sentiment score for each comment
@@ -155,7 +157,7 @@ class RedditScrapeManager:
     def get_plot1(x, y):
         plt.switch_backend('AGG')
         plt.figure(figsize(14, 7))
-        plt.title('Sentiment Score of Subreddits')
+        plt.title('Sentiment Score of Subreddits for Keyword')
         plt.bar(x, y)
         plt.xlabel('Subreddits')
         plt.xticks([])
@@ -164,11 +166,10 @@ class RedditScrapeManager:
         graph = RedditScrapeManager.get_graph()
         return graph
 
-
     def get_plot2(x, y):
         plt.switch_backend('AGG')
         plt.figure(figsize(14, 7))
-        plt.title('Sentiment Score of Comments')
+        plt.title('Sentiment Score of Comments for Keyword')
         plt.bar(x, y)
         plt.xlabel('Comments')
         plt.xticks([])
@@ -180,10 +181,26 @@ class RedditScrapeManager:
     def get_plot3(x, y):
         plt.switch_backend('AGG')
         plt.figure(figsize(14, 7))
+        plt.title('Sentiment Percentages of Comments for Keyword')
         labels = ('negative', 'neutral', 'positive')
-        plt.bar(x, y)
+        barlist = plt.bar(x, y)
+        barlist[0].set_color('r')
+        barlist[1].set_color('b')
+        barlist[2].set_color('g')
         plt.xticks(x, labels)
         plt.ylabel('percentage')
+        plt.tight_layout()
+        graph = RedditScrapeManager.get_graph()
+        return graph
+
+    def get_plot4(x1, y1, x2, y2):
+        plt.switch_backend('AGG')
+        plt.figure(figsize(14, 7))
+        plt.title('Sentiment Scores Time Distribution for Keyword')
+        plt.bar(x1, y1, color='red', width=0.05)
+        plt.bar(x2, y2, color='green', width=0.05)
+        plt.xlabel('Timestamp')
+        plt.ylabel('Sentiment')
         plt.tight_layout()
         graph = RedditScrapeManager.get_graph()
         return graph

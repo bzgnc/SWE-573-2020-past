@@ -21,6 +21,7 @@ def index(request):
 def about(request):
     return render(request, 'about.html')
 
+
 @login_required(login_url="/accounts/login/")
 def analyze_sentiment(request):
     subreddit = request.GET.get('subreddit')
@@ -63,10 +64,25 @@ def analyze_sentiment(request):
     y = counts
     chart3 = RedditScrapeManager.get_plot3(x, y)
 
-    
+    qs4 = Submission.objects.filter(title__icontains=subreddit).distinct()
+    results = []
+    for x in qs4:
+        scores = sia.polarity_scores(x.title)
+        scores['timestamp'] = x.timestamp
+        results.append(scores)
+    df = pd.DataFrame.from_records(results)
+    df.loc[df['compound'] > 0.1, 'label'] = 1
+    df.loc[df['compound'] < -0.1, 'label'] = -1
+    x1 = df[df['label'] == -1].timestamp
+    x2 = df[df['label'] == 1].timestamp
+    y1 = df[df['label'] == -1].compound
+    y2 = df[df['label'] == 1].compound
+    chart4 = RedditScrapeManager.get_plot4(x1, y1, x2, y2)
+
     if scrape_instance.sub_exists():
         args = {'subreddit': subreddit, 'subreddit_info': subreddit_info,
-                'master_submission_data_list': master_submission_data_list, 'chart1': chart1, 'chart2': chart2, 'chart3': chart3}
+                'master_submission_data_list': master_submission_data_list, 'chart1': chart1, 'chart2': chart2,
+                'chart3': chart3, 'chart4': chart4}
         return render(request, 'analyze_sentiment.html', args)
 
     '''
