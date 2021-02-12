@@ -47,12 +47,12 @@ def analyze_sentiment(request):
     y = [sia.polarity_scores(y.title)['compound'] * 100 for y in qs1]
     chart1 = RedditScrapeManager.get_plot1(x, y)
 
-    qs2 = Comment.objects.all().distinct()
+    qs2 = Comment.objects.filter(comment_text__icontains=subreddit).distinct()
     x = [x.comment_text for x in qs2]
     y = [sia.polarity_scores(y.comment_text)['compound'] * 100 for y in qs2]
     chart2 = RedditScrapeManager.get_plot2(x, y)
 
-    qs3 = Comment.objects.all().distinct()
+    qs3 = Comment.objects.filter(comment_text__icontains=subreddit).distinct()
     results = []
     results = [sia.polarity_scores(x.comment_text) for x in qs3]
     df = pd.DataFrame.from_records(results)
