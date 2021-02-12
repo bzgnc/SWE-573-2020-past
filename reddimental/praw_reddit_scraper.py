@@ -62,7 +62,7 @@ class RedditScrapeManager:
         return subreddit_info
 
     def get_submission_data(self):
-        for submission in self.subreddit_instance.hot(limit=30):
+        for submission in self.subreddit_instance.hot(limit=20):
             # Will not scrape stickied posts
             if submission.stickied:
                 continue
