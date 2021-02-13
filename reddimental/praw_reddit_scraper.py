@@ -62,7 +62,7 @@ class RedditScrapeManager:
         return subreddit_info
 
     def get_submission_data(self):
-        for submission in self.subreddit_instance.hot(limit=20):
+        for submission in self.subreddit_instance.hot(limit=10):
             # Will not scrape stickied posts
             if submission.stickied:
                 continue
@@ -82,7 +82,7 @@ class RedditScrapeManager:
                 # Following line of code may be modified with: 'top', 'new', or 'controversial'
                 submission.comment_sort = 'top'
                 submission.comments.replace_more(limit=0)
-                comment_forest = submission.comments[:15]
+                comment_forest = submission.comments[:10]
                 # comment_data is a dictionary containing a submissions average sentiment score in 'average_sentiment_score' and 'comments_list'
                 comment_data = self.get_comment_data(comment_forest, sub1.submission_id)
                 temp_submission_dict['comments'] = comment_data['comments_list']
