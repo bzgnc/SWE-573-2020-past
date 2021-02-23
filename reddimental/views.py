@@ -56,14 +56,15 @@ def analyze_sentiment(request):
     results = []
     results = [sia.polarity_scores(x.comment_text) for x in qs3]
     df = pd.DataFrame.from_records(results)
+    print(df)
     df['label'] = 0
     df.loc[df['compound'] > 0.1, 'label'] = 1
     df.loc[df['compound'] < -0.1, 'label'] = -1
     counts = df.label.value_counts(normalize=True) * 100
+    print(counts)
     x = counts.index
     y = counts
     chart3 = RedditScrapeManager.get_plot3(x, y)
-
     qs4 = Submission.objects.filter(title__icontains=subreddit).distinct()
     results = []
     for x in qs4:
